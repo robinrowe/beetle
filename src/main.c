@@ -8,10 +8,7 @@
 // THIS PROGRAM IS PROVIDED AS IS, WITH NO WARRANTY. USE IS AT THE USER’S
 // RISK.
 
-#include "config.h"
-
-#include "external_syms.h"
-
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -26,15 +23,15 @@
 #include <libgen.h>
 #include <glob.h>
 
+#include "config.h"
+#include "external_syms.h"
 #include "progname.h"
 #include "xalloc.h"
 #include "xvasprintf.h"
-
 #include "beetle.h"
 #include "beetle_aux.h"
 #include "beetle_debug.h"
 #include "beetle_opcodes.h"
-
 
 #define DEFAULT_MEMORY 1048576 // Default size of VM memory in words (4MB)
 #define MAX_MEMORY 1073741824 // Maximum size of memory in words (4GB)
@@ -138,21 +135,26 @@ static const char *globdirname(const char *file)
     const char *dir = globfile(dirname(filecopy));
     free(filecopy);
     filecopy = xstrdup(file);
-    char *base = basename(filecopy);
+    const char *base = basename(filecopy);
     globbed_file = xasprintf("%s/%s", dir, base);
     free(filecopy);
 
     return globbed_file;
 }
 
+#ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-attribute=pure"
+#endif
+
 static void check_aligned(UCELL adr, const char *quantity)
 {
     if (!IS_ALIGNED(adr))
         fatal("%s must be cell-aligned", quantity);
 }
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif
 
 static void check_range(UCELL start, UCELL end, const char *quantity)
 {
@@ -447,10 +449,14 @@ static void do_display(size_t no, const char *format)
             display = xasprintf("unknown register");
             break;
     }
+#ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
     printf(format, display);
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif
     free(display);
 }
 
@@ -791,6 +797,11 @@ static _GL_ATTRIBUTE_FORMAT_PRINTF(1, 2) void interactive_printf(const char *for
     vprintf(format, args);
     va_end(args);
 }
+
+enum {
+    required_argument, 
+    no_argument
+};
 
 // Options table
 struct option longopts[] = {

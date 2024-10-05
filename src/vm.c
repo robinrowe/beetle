@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <string.h>
 #include "binary-io.h"
 #include "minmax.h"
@@ -74,11 +75,14 @@ inline int load_cell(UCELL addr, CELL *value)
         R(NOT_ADDRESS) = addr;
         return -9;
     }
-
+#ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
+#endif
     *value = *(CELL *)ptr;
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif
     return 0;
 }
 
@@ -105,11 +109,14 @@ inline int store_cell(UCELL addr, CELL value)
         R(NOT_ADDRESS) = addr;
         return -9;
     }
-
+#ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
+#endif
     *(CELL *)ptr = value;
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif
     return 0;
 }
 
@@ -148,8 +155,10 @@ int reverse(UCELL start, UCELL length)
     return ret;
 }
 
+#ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-attribute=pure"
+#endif
 int pre_dma(UCELL from, UCELL to)
 {
     int exception = 0;
@@ -164,7 +173,9 @@ int pre_dma(UCELL from, UCELL to)
         exception = reverse(from, to - from);
     return exception;
 }
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif
 
 int post_dma(UCELL from, UCELL to)
 {

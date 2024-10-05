@@ -146,7 +146,7 @@ _GL_ATTRIBUTE_CONST const char *disass(BYTE opcode)
 _GL_ATTRIBUTE_PURE BYTE toass(const char *token)
 {
     for (size_t i = 0; i < sizeof(mnemonic) / sizeof(mnemonic[0]); i++)
-        if (mnemonic[i] && strcmp(token, mnemonic[i]) == 0) return i;
+        if (mnemonic[i] && strcmp(token, mnemonic[i]) == 0) return (beetle_BYTE) i;
 
     return O_UNDEFINED;
 }
