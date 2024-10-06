@@ -23,12 +23,4 @@
 #define VERSION "1"
 #define PACKAGE_VERSION "0"
 
-#include <stdio.h>
-//typedef int FILE;
-size_t getline(char** lineptr, size_t* n, FILE* stream);
-
-#define STDOUT_FILENO _fileno(stdout)
-#define STDIN_FILENO _fileno(stdin)
-#define STDERR_FILENO _fileno(stderr)
-
 #endif
